@@ -1,0 +1,19 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+    <persistence-unit name="sample">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>java:/DefaultDS</jta-data-source>
+
+        <class>entity.UsersEntity</class>
+
+        <properties>
+            <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.connection.password" value="bestuser"/>
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/telegram_bot?useSSL=false"/>
+            <property name="hibernate.connection.username" value="root"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+        </properties>
+    </persistence-unit>
+</persistence>
