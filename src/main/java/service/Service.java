@@ -33,7 +33,7 @@ public class Service {
                         resultSB = new StringBuilder("Погода? Я умею искать прогноз погоды! Напиши мне название города.");
                 }
                 case "/start" -> {
-                    resultSB = new StringBuilder("Привет!");
+                    resultSB = new StringBuilder("Привет! Я умею искать погоду. Введи название города!");
                 }
                 case "/settings", "Settings" -> {
                     resultSB = new StringBuilder("Что будем настраивать?");
@@ -111,13 +111,11 @@ public class Service {
             Session session = sessionFactory.getCurrentSession();
             session.beginTransaction();
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
-            if (!query.getSingleResult().equals(""))
-            userEntity = query.getSingleResult();
-            System.out.println(userEntity);
-             if (userEntity == null) {
+             if (query.stream().findAny().isEmpty()) {
                 userEntity = new UsersEntity();
                 userEntity.setIdBot(id);
             }
+             else userEntity = query.getSingleResult();
             userEntity.setUsername(message);
             session.persist(userEntity);
             session.getTransaction().commit();
@@ -130,11 +128,11 @@ public class Service {
             session.beginTransaction();
 
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
-            userEntity = query.getSingleResult();
-            if (userEntity == null) {
+            if (query.stream().findAny().isEmpty()) {
                 userEntity = new UsersEntity();
                 userEntity.setIdBot(id);
             }
+            else userEntity = query.getSingleResult();
             userEntity.setCity(message);
             session.persist(userEntity);
             session.getTransaction().commit();
@@ -146,12 +144,12 @@ public class Service {
             Session session = sessionFactory.getCurrentSession();
             session.beginTransaction();
 
-            Query<UsersEntity> list = session.createQuery("FROM UsersEntity where idBot =: idMethod", UsersEntity.class).setParameter("idMethod", id);
-            userEntity = list.getSingleResult();
-            if (userEntity.getIdBot() == null) {
+            Query<UsersEntity> query = session.createQuery("FROM UsersEntity where idBot =: idMethod", UsersEntity.class).setParameter("idMethod", id);
+            if (query.stream().findAny().isEmpty()) {
                 userEntity = new UsersEntity();
                 userEntity.setIdBot(id);
             }
+            else userEntity = query.getSingleResult();
             userEntity.setWeatherSettings(message);
             session.persist(userEntity);
             session.getTransaction().commit();
