@@ -28,7 +28,7 @@ public class Service {
                     String str = service.getCityUser(update.getMessage().getFrom().getId());
                     day = service.getWeatherSettings(update.getMessage().getFrom().getId());
                     if (str != null & day != null)
-                        resultSB = new StringBuilder(Weather.getWeather(str, day));
+                        resultSB = Weather.getWeather(str, day);
                     else
                         resultSB = new StringBuilder("Погода? Я умею искать прогноз погоды! Напиши мне название города.");
                 }
@@ -72,7 +72,8 @@ public class Service {
                 }
                 default -> {
                     try {
-                        resultSB = new StringBuilder(Weather.getWeather(message, day));
+                        resultSB = Weather.getWeather(message, day);
+                        messageInfo.cleanFile();
                     } catch (IOException e) {
                         resultSB = new StringBuilder("Я не знаю такого города!");
                     }
@@ -95,8 +96,7 @@ public class Service {
 
     public UsersEntity getUserInfo(long id) {
 
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
@@ -107,8 +107,7 @@ public class Service {
     }
 
     public void addOrUpdateUsername(String message, long id) {
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
              if (query.stream().findAny().isEmpty()) {
@@ -123,8 +122,7 @@ public class Service {
     }
 
     public void addOrUpdateCity(String message, long id) {
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
@@ -140,8 +138,7 @@ public class Service {
     }
 
     public void addOrUpdateWeatherSettings(String message, long id) {
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
 
             Query<UsersEntity> query = session.createQuery("FROM UsersEntity where idBot =: idMethod", UsersEntity.class).setParameter("idMethod", id);
@@ -157,8 +154,7 @@ public class Service {
     }
 
     public String getWeatherSettings(long id) {
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
             Query<UsersEntity> list = session.createQuery("FROM UsersEntity where idBot =: idMethod", UsersEntity.class).setParameter("idMethod", id);
             userEntity = list.getSingleResult();
@@ -168,8 +164,7 @@ public class Service {
     }
 
     public String getCityUser(long id) {
-        try (SessionFactory sessionFactory = getSessionFactory()) {
-            Session session = sessionFactory.getCurrentSession();
+        try (Session session = getSession()) {
             session.beginTransaction();
             Query<UsersEntity> query = session.createQuery("from UsersEntity where idBot = :idMethod", UsersEntity.class).setParameter("idMethod", id);
             userEntity = query.getSingleResult();
@@ -180,7 +175,9 @@ public class Service {
 
     }
 
-    public SessionFactory getSessionFactory() {
-        return new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UsersEntity.class).buildSessionFactory();
+    public Session getSession() {
+        SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(UsersEntity.class).buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+        return session;
     }
 }

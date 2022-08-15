@@ -10,21 +10,21 @@ import java.util.Scanner;
 
 public class Weather {
 
-    public static String getWeather(String message, String day) throws IOException {
+    public static StringBuilder getWeather(String message, String day) throws IOException {
         URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?q=" + message + "&units=metric&appid=35ab5c2d657c4736dc14b4dafbf869d3");
 
         Scanner sc = new Scanner((InputStream) url.getContent());
         ModelWeather model = new ModelWeather();
         String resultJSON = "";
-        String result = "";
+        StringBuilder result;
         while (sc.hasNext()) {
             resultJSON += sc.nextLine();
         }
 
         JSONObject jsonObject = new JSONObject(resultJSON);
         model.setCity(message);
-        result = "Город: " + model.getCity() + "\n" +
-                "Погода на " + day + ": ";
+        result = new StringBuilder("Город: " + model.getCity() + "\n" +
+                "Погода на " + day + ": ");
         for (int i = 0; i < 33; i += 8) {
             if (day.equals("Завтра")) {
                 i = 8;
@@ -34,7 +34,7 @@ public class Weather {
             if (day.equals("5 дней"))
             {
                 model.setData(jsonObjectList.getString("dt_txt"));
-                result += "\n" + model.getData() + ": ";
+                result.append("\n").append(model.getData()).append(": ");
             }
             JSONObject jsonObjectMain = jsonObjectList.getJSONObject("main");
             JSONArray jsonArrayWeather = jsonObjectList.getJSONArray("weather");
@@ -45,13 +45,10 @@ public class Weather {
             model.setHumidity(jsonObjectMain.getDouble("humidity"));
 
 
-            result += model.getMain() + "\n" +
-                    "Описание: " + model.getDescription() + "\n" +
-                    "Температура: " + model.getTemp() + "C" + "\n" +
-                    "Влажность: " + model.getHumidity() + "\n";
+            result.append(model.getMain()).append("\n").append("Описание: ").append(model.getDescription()).append("\n").append("Температура: ").append(model.getTemp()).append("C").append("\n").append("Влажность: ").append(model.getHumidity()).append("\n");
             if (day.equals("Сегодня") & i == 0) return result;
             if (day.equals("Завтра") & i == 8) return result;
-            result += "\n";
+            result.append("\n");
         }
         return result;
     }

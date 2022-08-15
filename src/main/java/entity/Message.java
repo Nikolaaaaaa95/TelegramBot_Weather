@@ -33,15 +33,5 @@ public class Message {
             System.out.println("file delete");
         }
         else System.out.println("file not delete");
-
-        FileWriter newFile;
-
-        try {
-            newFile = new FileWriter("messageInfo.txt");
-            newFile.write("NEW ");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        newFile.close();
     }
 }
